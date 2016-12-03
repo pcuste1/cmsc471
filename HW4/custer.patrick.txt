@@ -1,0 +1,134 @@
+1.) Checking validity
+    1. P v ¬P
+       >>> tt_true(expr('P | ~P'))
+       True
+
+    2. P → P
+       >>> tt_true(expr('P >> P'))
+       True
+ 
+    3. P→ (P v Q)
+       >>> tt_true(expr('P >> (P | Q)'))
+       True
+
+    4. (P v Q) → P
+       >>> tt_true(expr('(P | Q) >> P'))
+       False
+
+    5. ((A ∧B) →C) ↔ (A → (B → C))
+       >>> tt_true(expr('((A & B) >> C) <=> (A >> (B >> C))'))
+       True
+
+    6. ((A →B) →A) →A
+       >>> tt_true(expr('((A >> B) >> A) >> A'))
+       True
+
+2.) Satisfiability
+   1. P ∧ Q
+      >>> dpll_satisfiable(expr('P & Q'))
+      {P: True, Q: True}
+
+   2. ALIVE→ ¬DEAD ∧ ¬ALIVE∧ ¬DEAD
+      >>> dpll_satisfiable(expr('ALIVE >> ~DEAD & ~ALIVE & ~DEAD'))
+      {ALIVE: false; DEAD:false}
+
+   3. P → ¬ P v P
+      >>> dpll_satisfiable (expr('P >> ~P & P'))
+      False
+
+   4. ~ (P v ¬ P)
+      >>> dpll_satosfiable(expr('~(P | ~P)'))
+      False
+
+3.) Propositional Consequences
+   1. P ∧ Q ⊨ P 
+      true
+
+   2. P ⊨ P ∧ Q
+      false
+
+   3. P ⊨ P v Q
+      true
+
+   4. P ⊨ ¬ ¬ P
+      true
+
+   5. P → Q ⊨ ¬ P → ¬ Q
+      false
+
+   6. ¬ P ⊨ P → Q
+      true
+
+   7. ¬ Q ⊨ P → Q
+      false
+
+   8. P ∧ (P → Q) ⊨ Q
+      true
+
+   9. ( ¬ P) ∧ (Q → P) ⊨ ¬ Q
+      true
+
+4.) English to FOL
+   1. There is no largest prime number.
+      ~(Ex number(x) ^ prime(x) ^ (Ay number(y) ^ prime(y) -> x>=y))
+
+   2. Everything is either dead or alive.
+      Ax dead(x) ^ ~alive(x) V alive(x) ^ ~dead(x)  
+
+   3. Dead things are not animate.
+      Ax dead(x) => ~animate(x)
+
+   4. Zombies are not alive but they are animate.
+      A(zombies) ~alive(zombies) ^ animate(zombies)
+
+   5. Good food is not cheap and cheap food is not good.
+      A(food) (good(food) => ~cheap(food)) ^ (cheap(food) => ~good(food))
+
+   6. John has exactly two brothers.
+      John(x) => hasTwoBrothers(x)
+
+   7. No person can have two mothers.
+      A(person) => ~twoMothers(person)
+
+   8. If John has a sister, she is smart.
+      Ax sister(x, john) => smart(x) 
+
+   9. Every person is either male or female and no person can be both male and female.
+      Ax male(x) v female(x) ^ ~(male(x) ^ female(x))  
+
+   10. The enemy of your enemy is your friend.
+      AX Ay enemy(x, y) ^ enemy(self, y) => friend(x) 
+
+   11. An ancestor of your ancestor is your ancestor.
+      Ax Ay ancestor(x, y) ^ ancestor(self, x) => ancestor(self, y)
+
+5.) CNF and horn clauses
+   1. ∀x knows(x, x) ∧ likes(x, x)
+      (a) Everyone knows and likes himself; (b) this can be rewritten as a horn clause; (c) set of clauses: [knows(x, x), likes(x, x)]
+
+   2. ∀x ∀y married(x, y) → loves(x, y) v hates(x, y)
+      (a) Every married person loves or hates their husband/wife; (b) This cannot be written as a horn clause; (c)
+
+   3. ∀x ∀y loves(x, y) ↔ loves(y, x)
+      (a) Everyone who loves someone is loved back by that someone; (b) This cannot be written as a horn clause; (c)
+
+   4. ∀x ∀y dating(x, y) v engaged(x, y) → knows(x, y) ∧ likes(x, y)
+      (a) Everyone engaged or dating knows and loves that person; (b) Cannot be written as a horn clause; (c)
+
+   5. ∀x ∀y loves(x, y) → ¬ hates(x, y)
+      (a) Every person who loves someone does not hate that person; (b) Cannot be written as a horn clause; (c)
+
+   6. ∀x ∀y ¬ knows(x, y) → ¬ likes(x, y)
+      (a) Everyone who doesn't know someone does not like that person; (b) cannot be written as a horn clause; (c)
+
+   7. ∀x ∃y knows(x, y) ∧ hates(x, y)
+      (a) Everyone knows and hets someone; (b) This cannot be written as a horn clause; (c)
+
+   8. ∃y ∀x knows(x, y) ∧ hates(x, y)
+      (a) Someone knows is known and hated by everyone; (b) This Cannot be written as a horn clause; (c)
+
+   9. ¬ (∀x loves(x, x))
+      (a) Not everyone loves themselves; (b) This cannot written as a horn clause; (c)
+
+   10. ¬ (∃x ∀y knows(x, y))
+      (a) No one exists who knows every person; (b) This cannot be written as a horn clausel; (c)
